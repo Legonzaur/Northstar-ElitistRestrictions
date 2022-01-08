@@ -203,6 +203,7 @@ table playersCounters = {}
             }
             SendHudMessage( player, message, -1, 0.9, 192, 192, 192, 255, 0, duration*2, 0 )
         }else if(TextCounterEnabled()){
+	    //Oh god my fingers hurts when writing this (how tf do I keep integer part only)
             SendHudMessage( player, ((counter*100)-((counter*100)%1))+"%", -1, 0.8, 192, 192, 192, 255, 0, duration*2, 0 )
         }
         if(BurnMeterCounterEnabled()){
