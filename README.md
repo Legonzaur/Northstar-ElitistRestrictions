@@ -3,16 +3,17 @@
 Mod for Titanfall2's Northstar
 
 Begone Campers
-Begone SMGS users
-Don't roast me on this I know it's not a good idea
 
+Begone SMGs
+
+Don't roast me on this
 ## convars
 
 ### Loadout
 
-- `remove_melee 1` Completely removes the ability to melee, even with a grapple
-- `force_weapons 1` Replaces SMGS + Assault Rifles by a Kraber and RE45 by a B3 Wingman
-- `patch_weapons 1` Modifies some weapons (mostly antititan) to make them stronger against pilots
+- `remove_melee 0` Completely removes the ability to melee, even with a grapple
+- `force_weapons 0` Replaces SMGS + Assault Rifles by a Kraber and RE45 by a B3 Wingman
+- `patch_weapons 0` Modifies some weapons (mostly antititan) to make them stronger against pilots
 
 ### Speedgauge
 
