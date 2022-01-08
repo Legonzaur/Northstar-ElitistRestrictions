@@ -1,0 +1,20 @@
+{
+  "Name": "Loadouts.Elitist",
+  "Description": "Forces everyone to move. Don't roast me on this.",
+  "LoadPriority": 2,
+  "RequiredOnClient": false,
+  "Version": "1.0",
+
+  "Scripts": [
+    {
+      "Path": "elitist.gnut",
+      "RunOn": "MP",
+      "ClientCallback": {
+        "After": "Elitist_Init"
+      },
+      "ServerCallback": {
+        "After": "Elitist_Init"
+      }
+    }
+  ]
+}
