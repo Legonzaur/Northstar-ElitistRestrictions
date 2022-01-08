@@ -63,6 +63,8 @@ float acceptedSpeed = 260 // 260 is running speed
 table playersCounters = {}
 #if SERVER
     void function ForcePlayerLoadout( entity player ) {
+    	if(KillSlowPlayersEnabled() || DamageSlowPlayersEnabled())
+    		SendHudMessage( player, "Static players are penalized", -1, 0.4, 255, 255, 255, 255, 0.15, 3.0, 0.5 )
         if(RemoveMeleeEnabled()){
             RemoveMelee(player)
         }
