@@ -4,7 +4,7 @@ Mod for Titanfall2's Northstar
 
 Begone Campers
 
-Begone SMGS users
+Begone SMGs
 
 Don't roast me on this
 ## convars
