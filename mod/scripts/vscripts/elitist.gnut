@@ -49,7 +49,7 @@ bool function BurnMeterCounterEnabled(){
     return GetCurrentPlaylistVarInt("burnmeter_speedgauge_counter", 0) == 1
 }
 
-array<string> kraber = ["mp_weapon_hemlok_smg","mp_weapon_g2","mp_weapon_alternator_smg","mp_weapon_car","mp_weapon_hemlok","mp_weapon_r97","mp_weapon_rspn101","mp_weapon_rspn101_og","mp_weapon_vinson"]
+array<string> kraber = ["mp_weapon_hemlok_smg","mp_weapon_g2","mp_weapon_alternator_smg","mp_weapon_car","mp_weapon_r97","mp_weapon_rspn101","mp_weapon_rspn101_og","mp_weapon_vinson"]
 array<string> secondary = ["mp_weapon_autopistol","mp_weapon_wingman"]
 array<string> shotguns = ["mp_weapon_mastiff","mp_weapon_shotgun","mp_weapon_shotgun_pistol"]
 array<string> grenadiers = ["mp_weapon_epg","mp_weapon_softball","mp_weapon_pulse_lmg"]
@@ -92,6 +92,11 @@ table playersCounters = {}
                 player.TakeWeaponNow( weapon.GetWeaponClassName() )
                 player.GiveWeapon( "mp_weapon_wingman", ["extended_ammo","pro_screen","pas_fast_reload"] )
             }
+	    else if(weapon.GetWeaponClassName() == "mp_weapon_hemlok" && !(KillSlowPlayersEnabled() || DamageSlowPlayersEnabled())){
+	    	player.TakeWeaponNow( "mp_weapon_hemlok" )
+                player.GiveWeapon( "mp_weapon_sniper", ["pas_fast_ads","pro_screen","extended_ammo", "ricochet"] )
+                SendHudMessage( player, "SMGS and Assault Rifles are disabled", -1, 0.4, 255, 255, 255, 255, 0.15, 3.0, 0.5 )
+	    }
             // else if ( lmgs.contains( weapon.GetWeaponClassName() ) )
             // {
             //     player.TakeWeaponNow( weapon.GetWeaponClassName() )
