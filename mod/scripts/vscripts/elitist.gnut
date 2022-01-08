@@ -187,9 +187,9 @@ table playersCounters = {}
     void function GraceTimeOnRespawned_Threaded(entity player){
         if(player.GetPlayerName() in playersCounters){
             for(var i = 0; i<graceTime; i+=speedFetchInterval){
-                wait speedFetchInterval
                 //Race conditions ? I don't even know how to make type casting, don't expect me to make a mutex
                 playersCounters[player.GetPlayerName()] = 1
+                wait speedFetchInterval
             }
         }
     }
@@ -200,7 +200,7 @@ table playersCounters = {}
             for(int i=0; i<counter*20; i++){
                 message += "#"
             }
-            SendHudMessage( player, message, -1, 0.8, 192, 192, 192, 255, 0, duration*2, 0 )
+            SendHudMessage( player, message, -1, 0.9, 192, 192, 192, 255, 0, duration*2, 0 )
         }else if(TextCounterEnabled()){
             SendHudMessage( player, ((counter*100)-((counter*100)%1))+"%", -1, 0.8, 192, 192, 192, 255, 0, duration*2, 0 )
         }
