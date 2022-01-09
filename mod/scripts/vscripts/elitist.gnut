@@ -7,6 +7,11 @@ void function Elitist_Init() {
         if(KillSlowPlayersEnabled() || DamageSlowPlayersEnabled()){
             AddCallback_GameStateEnter( eGameState.Playing, TrackPlayerSpeed )
             AddCallback_OnPlayerRespawned( GraceTimeOnRespawned )
+            // AddCallback_OnSelectedWeaponChanged( OnSelectedWeaponChanged )
+            // AddCreateCallback( "npc_turret_sentry", OnTurretCreated )
+            // OnWeaponActivate_burncardweapon( entity weapon )
+            // OnWeaponDeactivate_burncardweapon( entity weapon )
+            // weapon.HasMod
             AddCallback_OnPlayerRespawned( RemoveAntiSpeedLoadout )
             AddCallback_OnPlayerGetsNewPilotLoadout( RemoveAntiSpeedLoadoutOnChange )
         }
@@ -38,12 +43,14 @@ bool function PatchPlayerWeaponsEnabled() {
     return GetCurrentPlaylistVarInt("patch_weapons", 0) == 1
 }
 bool function KillSlowPlayersEnabled() {
+
     return GetCurrentPlaylistVarInt("kill_slow_players", 0) == 1
 }
 bool function DamageSlowPlayersEnabled() {
     return GetCurrentPlaylistVarInt("damage_slow_players", 0) == 1
 }
 bool function BarCounterEnabled() {
+
     return GetCurrentPlaylistVarInt("bar_speedgauge_counter", 0) == 1
 }
 bool function TextCounterEnabled() {
@@ -65,6 +72,7 @@ float graceTime = 2
 float acceptedSpeed = 260 // 260 is running speed
 
 table playersCounters = {}
+
 #if SERVER
     void function ForcePlayerLoadout( entity player ) {
         if(RemoveMeleeEnabled()){
@@ -146,7 +154,7 @@ table playersCounters = {}
 
             if(weaponChanged){
                 weaponSkins[weapon.GetWeaponClassName()] <- weapon.GetSkin()
-                weaponCamo[weapon.GetWeaponClassName()] <= weapon.GetCamo()
+                weaponCamo[weapon.GetWeaponClassName()] <- weapon.GetCamo()
             }
         }
 
@@ -155,10 +163,10 @@ table playersCounters = {}
             weapon.SetProScreenOwner(player)
             UpdateProScreen(player,weapon)
             if(weapon.GetWeaponClassName() in weaponSkins){
-                weapon.SetWeaponSkin(weaponSkins[weapon.GetWeaponClassName()])
+                weapon.SetWeaponSkin((weaponSkins[weapon.GetWeaponClassName()]+"").tofloat())
             }
             if(weapon.GetWeaponClassName() in weaponCamo){
-                weapon.SetWeaponCamo(weaponCamo[weapon.GetWeaponClassName()])
+                weapon.SetWeaponCamo((weaponCamo[weapon.GetWeaponClassName()]+"").tofloat())
             }
         }
     }
@@ -186,23 +194,24 @@ table playersCounters = {}
                     if(!(player.GetPlayerName() in playersCounters)){
                         playersCounters[player.GetPlayerName()] <- 1
                     }
-                    // velocity tracking
-                    vector velocity = player.GetVelocity()
-                    float playerVel = sqrt(velocity.x * velocity.x + velocity.y * velocity.y) // Keep only horizontal velocity
-                    playersCounters[player.GetPlayerName()] -= ((acceptedSpeed - playerVel)*counterMultiplier)*(speedFetchInterval*0.1)
+                    if(!player.IsPhaseShifted()){
+                        // velocity tracking
+                        vector velocity = player.GetVelocity()
+                        float playerVel = sqrt(velocity.x * velocity.x + velocity.y * velocity.y) // Keep only horizontal velocity
+                        playersCounters[player.GetPlayerName()] -= ((acceptedSpeed - playerVel)*counterMultiplier)*(speedFetchInterval*0.1)
 
-                    if(playersCounters[player.GetPlayerName()] > 1){
-                        playersCounters[player.GetPlayerName()] = 1
-                    }else if(playersCounters[player.GetPlayerName()] <= 0){
-                        playersCounters[player.GetPlayerName()] = 0
-                        if(KillSlowPlayersEnabled()){
-                            player.SetHealth(0)
-                            SendHudMessage( player, "You died because you were too slow", -1, 0.5, 255, 255, 255, 255, 0.15, 3.0, 0.5 )
+                        if(playersCounters[player.GetPlayerName()] > 1){
+                            playersCounters[player.GetPlayerName()] = 1
+                        }else if(playersCounters[player.GetPlayerName()] <= 0){
+                            playersCounters[player.GetPlayerName()] = 0
+                            if(KillSlowPlayersEnabled()){
+                                player.SetHealth(0)
+                                SendHudMessage( player, "You died because you were too slow", -1, 0.5, 255, 255, 255, 255, 0.15, 3.0, 0.5 )
+                            }
+                            else if(DamageSlowPlayersEnabled()){
+                                player.SetHealth(player.GetMaxHealth()/10)
+                            }
                         }
-                        else if(DamageSlowPlayersEnabled()){
-                            player.SetHealth(player.GetMaxHealth()/10)
-                        }
-
                     }
                     //IDK how to cast to float and it's ugly
                     printCounter(player, (playersCounters[player.GetPlayerName()]+"").tofloat(), speedFetchInterval)
