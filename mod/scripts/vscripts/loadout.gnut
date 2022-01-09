@@ -61,7 +61,7 @@ array<string> lmgs = ["mp_weapon_lstar","mp_weapon_esaw","mp_weapon_lmg"]
             {
                 player.TakeWeaponNow( weapon.GetWeaponClassName() )
                 player.GiveWeapon( "mp_weapon_wingman_n", ["pas_fast_ads","pro_screen","extended_ammo", "ricochet"] )
-                SendHudMessage( player, "SMGS and Assault Rifles are disabled", -1, 0.5, 255, 255, 255, 255, 0.15, 3.0, 0.5 )
+                SendHudMessage( player, "SMGS and Assault Rifles are disabled", -1, 0.5, 255, 255, 255, 255, 0.15, 2.0, 0.5 )
             }
             else if ( secondary.contains( weapon.GetWeaponClassName() ) )
             {

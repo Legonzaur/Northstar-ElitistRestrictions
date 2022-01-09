@@ -18,9 +18,11 @@ void function Elitist_Init() {
             AddCallback_OnPlayerGetsNewPilotLoadout( RemoveAntiSpeedLoadoutOnChange )
 
             AddCallback_GameStateEnter( eGameState.Playing, TrackPlayerSpeed )
+
             //Don't die after the match, but needs fix for epilogue
             AddCallback_GameStateEnter( eGameState.WinnerDetermined, StopTrackingPlayerSpeed )
             AddCallback_OnPlayerRespawned( GraceTimeOnRespawned )
+            AddCallback_OnClientConnected( GraceTimeOnRespawned )
         }
 
         Riff_ForceTitanAvailability( eTitanAvailability.Never )
@@ -72,12 +74,16 @@ table playersCounters = {}
 
     void function TrackPlayerSpeed() {
         GameIsPlaying = true
+
         thread TrackPlayerSpeed_Threaded()
     }
 
     void function TrackPlayerSpeed_Threaded(){
         wait 2
-        foreach (entity player in GetPlayerArray()) SendHudMessage( player, "Static players are penalized", -1, 0.4, 255, 255, 255, 255, 0.15, 3.0, 0.5 )
+        foreach (entity player in GetPlayerArray()){
+            SendHudMessage( player, "Static players are penalized", -1, 0.4, 255, 255, 255, 255, 0.15, 3.0, 0.5 )
+            GraceTimeOnRespawned(player) // Initializes
+        }
         wait 3
         while( GameIsPlaying )
         {
@@ -85,11 +91,9 @@ table playersCounters = {}
             array<entity> players = GetPlayerArray()
             foreach (entity player in players)
             {
-                if ( IsAlive( player ) )
+                if ( IsAlive( player ) && player.GetPlayerName() in playersCounters && playersCounters[player.GetPlayerName()] >= 0 )
                 {
-                    if(!(player.GetPlayerName() in playersCounters)){
-                        playersCounters[player.GetPlayerName()] <- 1
-                    }
+                    print(player)
                     if(!player.IsPhaseShifted()){
                         // velocity tracking
                         vector velocity = player.GetVelocity()
@@ -123,12 +127,16 @@ table playersCounters = {}
 
     void function GraceTimeOnRespawned_Threaded(entity player){
         if(player.GetPlayerName() in playersCounters){
-            for(var i = 0; i<graceTime; i+=speedFetchInterval){
-                //Race conditions ? I don't even know how to make type casting, don't expect me to make a mutex
-                playersCounters[player.GetPlayerName()] = 1
-                wait speedFetchInterval
-            }
+            playersCounters[player.GetPlayerName()] = -1
+        }else{
+            playersCounters[player.GetPlayerName()] <- -1
         }
+            wait graceTime
+            if(!(player.GetPlayerName() in playersCounters)){
+                playersCounters[player.GetPlayerName()] <- 1
+            }else{
+                playersCounters[player.GetPlayerName()] = 1
+            }
     }
 
     void function RemoveAntiSpeedLoadout(entity player){
