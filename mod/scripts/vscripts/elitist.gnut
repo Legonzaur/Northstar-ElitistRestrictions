@@ -107,34 +107,46 @@ table playersCounters = {}
 
 
     void function PatchPlayerWeapons(entity player){
+        table weaponSkins = {}
+        table weaponCamo = {}
         foreach ( entity weapon in player.GetMainWeapons() )
         {
-
+            bool weaponChanged = false
             if ( weapon.GetWeaponClassName() == "mp_weapon_arc_launcher" )
             {
+                weaponChanged = true
                 player.TakeWeaponNow( "mp_weapon_arc_launcher" )
                 player.GiveWeapon( "mp_weapon_arc_launcher", ["at_unlimited_ammo","pro_screen","pas_fast_swap","burn_mod_arc_launcher","pas_fast_reload"])
             }
             else if ( weapon.GetWeaponClassName() == "mp_weapon_mgl" )
             {
+                weaponChanged = true
                 player.TakeWeaponNow( "mp_weapon_mgl" )
                 player.GiveWeapon( "mp_weapon_mgl", ["at_unlimited_ammo","pro_screen","burn_mod_mgl","ar_trajectory"])
             }
             else if ( weapon.GetWeaponClassName() == "mp_weapon_smr" )
             {
+                weaponChanged = true
                 player.TakeWeaponNow( "mp_weapon_smr" )
                 player.GiveWeapon( "mp_weapon_smr", ["pas_fast_ads","pro_screen","extended_ammo", "pas_fast_reload"] )
             }
             else if ( weapon.GetWeaponClassName() == "mp_weapon_sniper" )
             {
+                weaponChanged = true
                 player.TakeWeaponNow( "mp_weapon_sniper" )
                 player.GiveWeapon( "mp_weapon_sniper", ["pas_fast_ads","pro_screen","extended_ammo", "ricochet"] )
             }
             else if ( weapon.GetWeaponClassName() == "mp_weapon_defender" || weapon.GetWeaponClassName() == "mp_weapon_rocket_launcher")
             {
+                weaponChanged = true
                 player.TakeWeaponNow( "mp_weapon_defender" )
                 player.TakeWeaponNow(  "mp_weapon_rocket_launcher" )
                 player.GiveWeapon( "mp_weapon_defender", ["at_unlimited_ammo","pro_screen","pas_fast_swap","pas_run_and_gun"])
+            }
+
+            if(weaponChanged){
+                weaponSkins[weapon.GetWeaponClassName()] <- weapon.GetSkin()
+                weaponCamo[weapon.GetWeaponClassName()] <= weapon.GetCamo()
             }
         }
 
@@ -142,6 +154,12 @@ table playersCounters = {}
         {
             weapon.SetProScreenOwner(player)
             UpdateProScreen(player,weapon)
+            if(weapon.GetWeaponClassName() in weaponSkins){
+                weapon.SetWeaponSkin(weaponSkins[weapon.GetWeaponClassName()])
+            }
+            if(weapon.GetWeaponClassName() in weaponCamo){
+                weapon.SetWeaponCamo(weaponCamo[weapon.GetWeaponClassName()])
+            }
         }
     }
 
