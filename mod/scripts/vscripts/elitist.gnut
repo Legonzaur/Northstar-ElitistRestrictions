@@ -7,6 +7,8 @@ void function Elitist_Init() {
         if(KillSlowPlayersEnabled() || DamageSlowPlayersEnabled()){
             AddCallback_GameStateEnter( eGameState.Playing, TrackPlayerSpeed )
             AddCallback_OnPlayerRespawned( GraceTimeOnRespawned )
+            AddCallback_OnPlayerRespawned( RemoveAntiSpeedLoadout )
+            AddCallback_OnPlayerGetsNewPilotLoadout( RemoveAntiSpeedLoadoutOnChange )
         }
 
         Riff_ForceTitanAvailability( eTitanAvailability.Never )
@@ -81,22 +83,17 @@ table playersCounters = {}
     void function ForcePlayerWeapons(entity player){
         foreach ( entity weapon in player.GetMainWeapons() )
         {
-            if ( kraber.contains( weapon.GetWeaponClassName() ) )
+            if ( kraber.contains( weapon.GetWeaponClassName() ) || (weapon.GetWeaponClassName() == "mp_weapon_hemlok" && !(KillSlowPlayersEnabled() || DamageSlowPlayersEnabled())) || (weapon.GetWeaponClassName() == "mp_weapon_shotgun" && (KillSlowPlayersEnabled() || DamageSlowPlayersEnabled())))
             {
                 player.TakeWeaponNow( weapon.GetWeaponClassName() )
-                player.GiveWeapon( "mp_weapon_sniper", ["pas_fast_ads","pro_screen","extended_ammo", "ricochet"] )
-                SendHudMessage( player, "SMGS and Assault Rifles are disabled", -1, 0.4, 255, 255, 255, 255, 0.15, 3.0, 0.5 )
+                player.GiveWeapon( "mp_weapon_wingman_n", ["pas_fast_ads","pro_screen","extended_ammo", "ricochet"] )
+                SendHudMessage( player, "SMGS and Assault Rifles are disabled", -1, 0.5, 255, 255, 255, 255, 0.15, 3.0, 0.5 )
             }
             else if ( secondary.contains( weapon.GetWeaponClassName() ) )
             {
                 player.TakeWeaponNow( weapon.GetWeaponClassName() )
                 player.GiveWeapon( "mp_weapon_wingman", ["extended_ammo","pro_screen","pas_fast_reload"] )
             }
-	    else if(weapon.GetWeaponClassName() == "mp_weapon_hemlok" && !(KillSlowPlayersEnabled() || DamageSlowPlayersEnabled())){
-	    	player.TakeWeaponNow( "mp_weapon_hemlok" )
-                player.GiveWeapon( "mp_weapon_sniper", ["pas_fast_ads","pro_screen","extended_ammo", "ricochet"] )
-                SendHudMessage( player, "SMGS and Assault Rifles are disabled", -1, 0.4, 255, 255, 255, 255, 0.15, 3.0, 0.5 )
-	    }
             // else if ( lmgs.contains( weapon.GetWeaponClassName() ) )
             // {
             //     player.TakeWeaponNow( weapon.GetWeaponClassName() )
@@ -199,6 +196,22 @@ table playersCounters = {}
                 wait speedFetchInterval
             }
         }
+    }
+
+    void function RemoveAntiSpeedLoadout(entity player){
+        entity ordnance = player.GetOffhandWeapon(OFFHAND_ORDNANCE)
+        if(ordnance.GetWeaponClassName() == "mp_weapon_grenade_gravity"){
+            player.TakeOffhandWeapon(OFFHAND_ORDNANCE)
+            player.GiveOffhandWeapon("mp_weapon_thermite_grenade", OFFHAND_ORDNANCE)
+        }
+        else if(ordnance.GetWeaponClassName() == "mp_weapon_grenade_emp"){
+            player.TakeOffhandWeapon(OFFHAND_ORDNANCE)
+            player.GiveOffhandWeapon("mp_weapon_frag_grenade", OFFHAND_ORDNANCE)
+        }
+    }
+
+    void function RemoveAntiSpeedLoadoutOnChange(entity player, PilotLoadoutDef loadout ){
+        RemoveAntiSpeedLoadout(player)
     }
 
     void function printCounter(entity player, float counter, float duration){
