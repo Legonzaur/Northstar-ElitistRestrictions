@@ -7,6 +7,7 @@ Begone Campers
 Begone SMGs
 
 Don't roast me on this
+
 ## convars
 
 ### Loadout
@@ -14,6 +15,7 @@ Don't roast me on this
 - `remove_melee 0` Completely removes the ability to melee, even with a grapple
 - `force_weapons 0` Replaces SMGS + Assault Rifles by a Kraber and RE45 by a B3 Wingman
 - `patch_weapons 0` Modifies some weapons (mostly antititan) to make them stronger against pilots
+- `force_boosts 0` Replaces SmartPistol by Phase Rewind and Pilot turret by HoloPilot Nova
 
 ### Speedgauge
 

@@ -4,11 +4,15 @@ void function Elitist_Loadout_Init() {
     #if SERVER
         AddCallback_OnPlayerRespawned( ForcePlayerLoadout )
         AddCallback_OnPlayerGetsNewPilotLoadout( ForcePlayerLoadoutOnLoadoutChange )
+
+        if(ForceBoostsEnabled()){
+            AddCallback_GameStateEnter( eGameState.Playing, Remove_NonElitist_Boosts )
+        }
+
     #endif
 }
 
 bool function KillSlowPlayersEnabled() {
-    return true
     return GetCurrentPlaylistVarInt("kill_slow_players", 0) == 1
 }
 bool function DamageSlowPlayersEnabled() {
@@ -18,12 +22,13 @@ bool function RemoveMeleeEnabled() {
     return GetCurrentPlaylistVarInt("remove_melee", 0) == 1
 }
 bool function ForceWeaponsEnabled() {
-    return true
     return GetCurrentPlaylistVarInt("force_weapons", 0) == 1
 }
 bool function PatchPlayerWeaponsEnabled() {
-    return true
     return GetCurrentPlaylistVarInt("patch_weapons", 0) == 1
+}
+bool function ForceBoostsEnabled() {
+    return GetCurrentPlaylistVarInt("force_boosts", 0) == 1
 }
 
 array<string> kraber = ["mp_weapon_hemlok_smg","mp_weapon_g2","mp_weapon_alternator_smg","mp_weapon_car","mp_weapon_r97","mp_weapon_rspn101","mp_weapon_rspn101_og","mp_weapon_vinson"]
@@ -131,6 +136,27 @@ array<string> lmgs = ["mp_weapon_lstar","mp_weapon_esaw","mp_weapon_lmg"]
 
     void function ForcePlayerLoadoutOnLoadoutChange(entity player, PilotLoadoutDef loadout ) {
         ForcePlayerLoadout( player )
+    }
+
+    void function Remove_NonElitist_Boosts(){
+        thread Remove_NonElitist_Boosts_Thread()
+    }
+
+    //I can't find how to override Northstar's code so here we go ugly
+    void function Remove_NonElitist_Boosts_Thread(){
+        while(true){
+            foreach (entity player in GetPlayerArray()){
+                wait 0.1
+                entity burncard = player.GetOffhandWeapon(4)
+                if(burncard && burncard.GetWeaponClassName() == "mp_ability_burncardweapon" && burncard.GetMods().find("burnmeter_smart_pistol") > 0){
+                    burncard.SetMods(["burn_card_weapon_mod","burnmeter_phase_rewind"])
+                }else if(burncard && burncard.GetWeaponClassName() == "mp_ability_turretweapon"){
+                    player.TakeOffhandWeapon(4)
+                    player.GiveOffhandWeapon("mp_ability_holopilot_nova",4,["burn_card_weapon_mod"])
+                }
+            }
+            //print(eGameState.Playing)
+        }
     }
 
 #endif
