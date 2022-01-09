@@ -91,7 +91,7 @@ table playersCounters = {}
             array<entity> players = GetPlayerArray()
             foreach (entity player in players)
             {
-                if ( IsAlive( player ) && player.GetPlayerName() in playersCounters && playersCounters[player.GetPlayerName()] >= 0 )
+                if ( IsValid(player) && IsAlive( player ) && player.GetPlayerName() in playersCounters && playersCounters[player.GetPlayerName()] >= 0 )
                 {
                     print(player)
                     if(!player.IsPhaseShifted()){
