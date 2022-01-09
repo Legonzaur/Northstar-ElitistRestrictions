@@ -30,9 +30,11 @@ bool function RemoveMeleeEnabled() {
     return GetCurrentPlaylistVarInt("remove_melee", 0) == 1
 }
 bool function ForceWeaponsEnabled() {
+    return true
     return GetCurrentPlaylistVarInt("force_weapons", 0) == 1
 }
 bool function PatchPlayerWeaponsEnabled() {
+    return true
     return GetCurrentPlaylistVarInt("patch_weapons", 0) == 1
 }
 bool function KillSlowPlayersEnabled() {
@@ -107,6 +109,7 @@ table playersCounters = {}
     void function PatchPlayerWeapons(entity player){
         foreach ( entity weapon in player.GetMainWeapons() )
         {
+
             if ( weapon.GetWeaponClassName() == "mp_weapon_arc_launcher" )
             {
                 player.TakeWeaponNow( "mp_weapon_arc_launcher" )
@@ -133,6 +136,12 @@ table playersCounters = {}
                 player.TakeWeaponNow(  "mp_weapon_rocket_launcher" )
                 player.GiveWeapon( "mp_weapon_defender", ["at_unlimited_ammo","pro_screen","pas_fast_swap","pas_run_and_gun"])
             }
+        }
+
+        foreach ( entity weapon in player.GetMainWeapons() )
+        {
+            weapon.SetProScreenOwner(player)
+            UpdateProScreen(player,weapon)
         }
     }
 
