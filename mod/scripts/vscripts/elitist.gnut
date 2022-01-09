@@ -18,14 +18,9 @@ void function Elitist_Init() {
             AddCallback_OnPlayerGetsNewPilotLoadout( RemoveAntiSpeedLoadoutOnChange )
 
             AddCallback_GameStateEnter( eGameState.Playing, TrackPlayerSpeed )
+            //Don't die after the match, but needs fix for epilogue
+            AddCallback_GameStateEnter( eGameState.WinnerDetermined, StopTrackingPlayerSpeed )
             AddCallback_OnPlayerRespawned( GraceTimeOnRespawned )
-            // AddCallback_OnSelectedWeaponChanged( OnSelectedWeaponChanged )
-            // AddCallback_OnTurretCreated(OnTurretCreated)
-            // AddCreateCallback( "npc_turret_sentry", OnTurretCreated )
-            // OnWeaponActivate_burncardweapon( entity weapon )
-            // OnWeaponDeactivate_burncardweapon( entity weapon )
-            // weapon.HasMod
-
         }
 
         Riff_ForceTitanAvailability( eTitanAvailability.Never )
@@ -62,6 +57,7 @@ float counterMultiplier = 0.02 //defines speed at which counter is added or remo
 float speedFetchInterval = 0.1 //seconds
 float graceTime = 2
 float acceptedSpeed = 260 // 260 is running speed
+bool GameIsPlaying = false;
 
 table playersCounters = {}
 
@@ -75,6 +71,7 @@ table playersCounters = {}
     }
 
     void function TrackPlayerSpeed() {
+        GameIsPlaying = true
         thread TrackPlayerSpeed_Threaded()
     }
 
@@ -82,7 +79,7 @@ table playersCounters = {}
         wait 2
         foreach (entity player in GetPlayerArray()) SendHudMessage( player, "Static players are penalized", -1, 0.4, 255, 255, 255, 255, 0.15, 3.0, 0.5 )
         wait 3
-        while( true )
+        while( GameIsPlaying )
         {
             wait speedFetchInterval
             array<entity> players = GetPlayerArray()
@@ -148,6 +145,10 @@ table playersCounters = {}
 
     void function RemoveAntiSpeedLoadoutOnChange(entity player, PilotLoadoutDef loadout ){
         RemoveAntiSpeedLoadout(player)
+    }
+
+    void function StopTrackingPlayerSpeed(){
+        GameIsPlaying = false
     }
 
     void function printCounter(entity player, float counter, float duration){
