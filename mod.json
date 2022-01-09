@@ -57,8 +57,15 @@
   ],
   "Scripts": [
     {
-      "Path": "elitist.gnut",
+      "Path": "loadout.gnut",
       "RunOn": "SERVER && MP",
+      "ServerCallback": {
+        "After": "Elitist_Loadout_Init"
+      }
+    },
+    {
+      "Path": "elitist.gnut",
+      "RunOn": "( CLIENT || SERVER ) && MP",
       "ServerCallback": {
         "After": "Elitist_Init"
       }

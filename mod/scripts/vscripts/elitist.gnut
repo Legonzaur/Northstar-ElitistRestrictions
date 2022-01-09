@@ -1,56 +1,52 @@
 global function Elitist_Init
 
 void function Elitist_Init() {
+    // AddPrivateMatchModeSettingArbitrary( "#MODE_SETTING_CATEGORY_RIFF", "accepted_speed", "260.0" )
+    // AddPrivateMatchModeSettingArbitrary( "#MODE_SETTING_CATEGORY_RIFF", "speedgauge_multiplier", "1.0" )
+    // AddPrivateMatchModeSettingEnum( "#MODE_SETTING_CATEGORY_RIFF", "remove_melee", [ "#SETTING_DISABLED", "#SETTING_ENABLED" ], "1" )
+    // AddPrivateMatchModeSettingEnum( "#MODE_SETTING_CATEGORY_RIFF", "force_weapons", [ "#SETTING_DISABLED", "#SETTING_ENABLED" ], "1" )
+    // AddPrivateMatchModeSettingEnum( "#MODE_SETTING_CATEGORY_RIFF", "patch_weapons", [ "#SETTING_DISABLED", "#SETTING_ENABLED" ], "1" )
+    // AddPrivateMatchModeSettingEnum( "#MODE_SETTING_CATEGORY_RIFF", "kill_slow_players", [ "#SETTING_DISABLED", "#SETTING_ENABLED" ], "1" )
+    // AddPrivateMatchModeSettingEnum( "#MODE_SETTING_CATEGORY_RIFF", "damage_slow_players", [ "#SETTING_DISABLED", "#SETTING_ENABLED" ], "0" )
+    // AddPrivateMatchModeSettingEnum( "#MODE_SETTING_CATEGORY_RIFF", "bar_speedgauge_counter", [ "#SETTING_DISABLED", "#SETTING_ENABLED" ], "1" )
+    // AddPrivateMatchModeSettingEnum( "#MODE_SETTING_CATEGORY_RIFF", "text_speedgauge_counter", [ "#SETTING_DISABLED", "#SETTING_ENABLED" ], "0" )
+    // AddPrivateMatchModeSettingEnum( "#MODE_SETTING_CATEGORY_RIFF", "burnmeter_speedgauge_counter", [ "#SETTING_DISABLED", "#SETTING_ENABLED" ], "0" )
+
     #if SERVER
-        AddCallback_OnPlayerRespawned( ForcePlayerLoadout )
-        AddCallback_OnPlayerGetsNewPilotLoadout( ForcePlayerLoadoutOnLoadoutChange )
         if(KillSlowPlayersEnabled() || DamageSlowPlayersEnabled()){
+            AddCallback_OnPlayerRespawned( RemoveAntiSpeedLoadout )
+            AddCallback_OnPlayerGetsNewPilotLoadout( RemoveAntiSpeedLoadoutOnChange )
+
             AddCallback_GameStateEnter( eGameState.Playing, TrackPlayerSpeed )
             AddCallback_OnPlayerRespawned( GraceTimeOnRespawned )
             // AddCallback_OnSelectedWeaponChanged( OnSelectedWeaponChanged )
+            // AddCallback_OnTurretCreated(OnTurretCreated)
             // AddCreateCallback( "npc_turret_sentry", OnTurretCreated )
             // OnWeaponActivate_burncardweapon( entity weapon )
             // OnWeaponDeactivate_burncardweapon( entity weapon )
             // weapon.HasMod
-            AddCallback_OnPlayerRespawned( RemoveAntiSpeedLoadout )
-            AddCallback_OnPlayerGetsNewPilotLoadout( RemoveAntiSpeedLoadoutOnChange )
+
         }
 
         Riff_ForceTitanAvailability( eTitanAvailability.Never )
 	    // Riff_ForceBoostAvailability( eBoostAvailability.Disabled )
-        //Add boost multiplier to 0
-        //Add amped weapons
-
-        if(GetCurrentPlaylistVarFloat("accepted_speed", 0) > 0){
+        if(GetCurrentPlaylistVarInt("accepted_speed", 0) > 0)
             acceptedSpeed = GetCurrentPlaylistVarFloat("accepted_speed", 0)
-        }
-        if(GetCurrentPlaylistVarFloat("speedgauge_multiplier", 0) > 0){
+        if(GetCurrentPlaylistVarInt("speedgauge_multiplier", 0) > 0)
             counterMultiplier *= GetCurrentPlaylistVarFloat("speedgauge_multiplier", 0)
-        }
-
     #endif
 }
 
-bool function RemoveMeleeEnabled() {
-    return GetCurrentPlaylistVarInt("remove_melee", 0) == 1
-}
-bool function ForceWeaponsEnabled() {
 
-    return GetCurrentPlaylistVarInt("force_weapons", 0) == 1
-}
-bool function PatchPlayerWeaponsEnabled() {
-
-    return GetCurrentPlaylistVarInt("patch_weapons", 0) == 1
-}
 bool function KillSlowPlayersEnabled() {
-
+    return true
     return GetCurrentPlaylistVarInt("kill_slow_players", 0) == 1
 }
 bool function DamageSlowPlayersEnabled() {
     return GetCurrentPlaylistVarInt("damage_slow_players", 0) == 1
 }
 bool function BarCounterEnabled() {
-
+    return true
     return GetCurrentPlaylistVarInt("bar_speedgauge_counter", 0) == 1
 }
 bool function TextCounterEnabled() {
@@ -60,11 +56,7 @@ bool function BurnMeterCounterEnabled(){
     return GetCurrentPlaylistVarInt("burnmeter_speedgauge_counter", 0) == 1
 }
 
-array<string> kraber = ["mp_weapon_hemlok_smg","mp_weapon_g2","mp_weapon_alternator_smg","mp_weapon_car","mp_weapon_r97","mp_weapon_rspn101","mp_weapon_rspn101_og","mp_weapon_vinson"]
-array<string> secondary = ["mp_weapon_autopistol","mp_weapon_wingman"]
-array<string> shotguns = ["mp_weapon_mastiff","mp_weapon_shotgun","mp_weapon_shotgun_pistol"]
-array<string> grenadiers = ["mp_weapon_epg","mp_weapon_softball","mp_weapon_pulse_lmg"]
-array<string> lmgs = ["mp_weapon_lstar","mp_weapon_esaw","mp_weapon_lmg"]
+
 
 float counterMultiplier = 0.02 //defines speed at which counter is added or removed
 float speedFetchInterval = 0.1 //seconds
@@ -75,100 +67,7 @@ table playersCounters = {}
 
 #if SERVER
     void function ForcePlayerLoadout( entity player ) {
-        if(RemoveMeleeEnabled()){
-            RemoveMelee(player)
-        }
-        if(ForceWeaponsEnabled()){
-            ForcePlayerWeapons(player)
-        }
-        if(PatchPlayerWeaponsEnabled()){
-            PatchPlayerWeapons(player)
-        }
-    }
 
-    void function RemoveMelee(entity player){
-        player.TakeOffhandWeapon(OFFHAND_MELEE)
-    }
-
-    void function ForcePlayerWeapons(entity player){
-        foreach ( entity weapon in player.GetMainWeapons() )
-        {
-            if ( kraber.contains( weapon.GetWeaponClassName() ) || (weapon.GetWeaponClassName() == "mp_weapon_hemlok" && !(KillSlowPlayersEnabled() || DamageSlowPlayersEnabled())) || (weapon.GetWeaponClassName() == "mp_weapon_shotgun" && (KillSlowPlayersEnabled() || DamageSlowPlayersEnabled())))
-            {
-                player.TakeWeaponNow( weapon.GetWeaponClassName() )
-                player.GiveWeapon( "mp_weapon_wingman_n", ["pas_fast_ads","pro_screen","extended_ammo", "ricochet"] )
-                SendHudMessage( player, "SMGS and Assault Rifles are disabled", -1, 0.5, 255, 255, 255, 255, 0.15, 3.0, 0.5 )
-            }
-            else if ( secondary.contains( weapon.GetWeaponClassName() ) )
-            {
-                player.TakeWeaponNow( weapon.GetWeaponClassName() )
-                player.GiveWeapon( "mp_weapon_wingman", ["extended_ammo","pro_screen","pas_fast_reload"] )
-            }
-            // else if ( lmgs.contains( weapon.GetWeaponClassName() ) )
-            // {
-            //     player.TakeWeaponNow( weapon.GetWeaponClassName() )
-            //     player.GiveWeapon( "mp_weapon_smr", ["pas_fast_ads","pro_screen","extended_ammo", "pas_fast_reload"] )
-            //     SendHudMessage( player, "Allowed weapons are Grenadier, Pistols, Shotguns", -1, 0.4, 255, 255, 255, 255, 0.15, 3.0, 0.5 )
-            // }
-        }
-    }
-
-
-    void function PatchPlayerWeapons(entity player){
-        table weaponSkins = {}
-        table weaponCamo = {}
-        foreach ( entity weapon in player.GetMainWeapons() )
-        {
-            bool weaponChanged = false
-            if ( weapon.GetWeaponClassName() == "mp_weapon_arc_launcher" )
-            {
-                weaponChanged = true
-                player.TakeWeaponNow( "mp_weapon_arc_launcher" )
-                player.GiveWeapon( "mp_weapon_arc_launcher", ["at_unlimited_ammo","pro_screen","pas_fast_swap","burn_mod_arc_launcher","pas_fast_reload"])
-            }
-            else if ( weapon.GetWeaponClassName() == "mp_weapon_mgl" )
-            {
-                weaponChanged = true
-                player.TakeWeaponNow( "mp_weapon_mgl" )
-                player.GiveWeapon( "mp_weapon_mgl", ["at_unlimited_ammo","pro_screen","burn_mod_mgl","ar_trajectory"])
-            }
-            else if ( weapon.GetWeaponClassName() == "mp_weapon_smr" )
-            {
-                weaponChanged = true
-                player.TakeWeaponNow( "mp_weapon_smr" )
-                player.GiveWeapon( "mp_weapon_smr", ["pas_fast_ads","pro_screen","extended_ammo", "pas_fast_reload"] )
-            }
-            else if ( weapon.GetWeaponClassName() == "mp_weapon_sniper" )
-            {
-                weaponChanged = true
-                player.TakeWeaponNow( "mp_weapon_sniper" )
-                player.GiveWeapon( "mp_weapon_sniper", ["pas_fast_ads","pro_screen","extended_ammo", "ricochet"] )
-            }
-            else if ( weapon.GetWeaponClassName() == "mp_weapon_defender" || weapon.GetWeaponClassName() == "mp_weapon_rocket_launcher")
-            {
-                weaponChanged = true
-                player.TakeWeaponNow( "mp_weapon_defender" )
-                player.TakeWeaponNow(  "mp_weapon_rocket_launcher" )
-                player.GiveWeapon( "mp_weapon_defender", ["at_unlimited_ammo","pro_screen","pas_fast_swap","pas_run_and_gun"])
-            }
-
-            if(weaponChanged){
-                weaponSkins[weapon.GetWeaponClassName()] <- weapon.GetSkin()
-                weaponCamo[weapon.GetWeaponClassName()] <- weapon.GetCamo()
-            }
-        }
-
-        foreach ( entity weapon in player.GetMainWeapons() )
-        {
-            weapon.SetProScreenOwner(player)
-            UpdateProScreen(player,weapon)
-            if(weapon.GetWeaponClassName() in weaponSkins){
-                weapon.SetWeaponSkin((weaponSkins[weapon.GetWeaponClassName()]+"").tofloat())
-            }
-            if(weapon.GetWeaponClassName() in weaponCamo){
-                weapon.SetWeaponCamo((weaponCamo[weapon.GetWeaponClassName()]+"").tofloat())
-            }
-        }
     }
 
     void function ForcePlayerLoadoutOnLoadoutChange(entity player, PilotLoadoutDef loadout ) {
@@ -205,8 +104,8 @@ table playersCounters = {}
                         }else if(playersCounters[player.GetPlayerName()] <= 0){
                             playersCounters[player.GetPlayerName()] = 0
                             if(KillSlowPlayersEnabled()){
-                                player.SetHealth(0)
                                 SendHudMessage( player, "You died because you were too slow", -1, 0.5, 255, 255, 255, 255, 0.15, 3.0, 0.5 )
+                                player.SetHealth(0)
                             }
                             else if(DamageSlowPlayersEnabled()){
                                 player.SetHealth(player.GetMaxHealth()/10)
@@ -214,7 +113,8 @@ table playersCounters = {}
                         }
                     }
                     //IDK how to cast to float and it's ugly
-                    printCounter(player, (playersCounters[player.GetPlayerName()]+"").tofloat(), speedFetchInterval)
+                    if(player.GetHealth() > 0)
+                        printCounter(player, (playersCounters[player.GetPlayerName()]+"").tofloat(), speedFetchInterval)
                 }
             }
         }
