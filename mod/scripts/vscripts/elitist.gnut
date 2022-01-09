@@ -30,11 +30,11 @@ bool function RemoveMeleeEnabled() {
     return GetCurrentPlaylistVarInt("remove_melee", 0) == 1
 }
 bool function ForceWeaponsEnabled() {
-    return true
+
     return GetCurrentPlaylistVarInt("force_weapons", 0) == 1
 }
 bool function PatchPlayerWeaponsEnabled() {
-    return true
+
     return GetCurrentPlaylistVarInt("patch_weapons", 0) == 1
 }
 bool function KillSlowPlayersEnabled() {
