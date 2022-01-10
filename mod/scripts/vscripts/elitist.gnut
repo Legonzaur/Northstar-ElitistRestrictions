@@ -126,17 +126,20 @@ table playersCounters = {}
     }
 
     void function GraceTimeOnRespawned_Threaded(entity player){
-        if(player.GetPlayerName() in playersCounters){
-            playersCounters[player.GetPlayerName()] = -1
-        }else{
-            playersCounters[player.GetPlayerName()] <- -1
-        }
+        if(IsValid(player)){
+            if(player.GetPlayerName() in playersCounters){
+                playersCounters[player.GetPlayerName()] = -1
+            }else{
+                playersCounters[player.GetPlayerName()] <- -1
+            }
             wait graceTime
             if(!(player.GetPlayerName() in playersCounters)){
                 playersCounters[player.GetPlayerName()] <- 1
             }else{
                 playersCounters[player.GetPlayerName()] = 1
             }
+        }
+
     }
 
     void function RemoveAntiSpeedLoadout(entity player){
