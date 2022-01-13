@@ -145,6 +145,7 @@ array<string> lmgs = ["mp_weapon_lstar","mp_weapon_esaw","mp_weapon_lmg"]
     //I can't find how to override Northstar's code so here we go ugly
     void function Remove_NonElitist_Boosts_Thread(){
         while(true){
+            wait 0.1
             foreach (entity player in GetPlayerArray()){
                 if(IsValid(player)){
                     entity burncard = player.GetOffhandWeapon(4)
@@ -155,7 +156,6 @@ array<string> lmgs = ["mp_weapon_lstar","mp_weapon_esaw","mp_weapon_lmg"]
                         player.GiveOffhandWeapon("mp_ability_holopilot_nova",4,["burn_card_weapon_mod"])
                     }
                 }
-                wait 0.1
             }
             //print(eGameState.Playing)
         }
