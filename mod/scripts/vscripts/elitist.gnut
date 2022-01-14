@@ -132,7 +132,10 @@ table playersCounters = {}
             }else{
                 playersCounters[player.GetPlayerName()] <- -1
             }
+	    
             wait graceTime
+	}
+	if(IsValid(player)){
             if(!(player.GetPlayerName() in playersCounters)){
                 playersCounters[player.GetPlayerName()] <- 1
             }else{
