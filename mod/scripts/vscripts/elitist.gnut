@@ -25,14 +25,12 @@ void function Elitist_Init() {
 
 
 bool function KillSlowPlayersEnabled() {
-    return true
     return GetCurrentPlaylistVarInt("kill_slow_players", 0) == 1
 }
 bool function DamageSlowPlayersEnabled() {
     return GetCurrentPlaylistVarInt("damage_slow_players", 0) == 1
 }
 bool function BarCounterEnabled() {
-    return true
     return GetCurrentPlaylistVarInt("bar_speedgauge_counter", 0) == 1
 }
 bool function TextCounterEnabled() {
@@ -82,7 +80,6 @@ table playersCounters = {}
             {
                 if ( IsValid(player) && IsAlive( player ) && player.GetPlayerName() in playersCounters && playersCounters[player.GetPlayerName()] >= 0 )
                 {
-                    print(player)
                     if(!player.IsPhaseShifted()){
                         // velocity tracking
                         vector velocity = player.GetVelocity()

@@ -22,9 +22,6 @@ bool function ForceWeaponsEnabled() {
 bool function PatchPlayerWeaponsEnabled() {
     return GetCurrentPlaylistVarInt("patch_weapons", 0) == 1
 }
-bool function ForceBoostsEnabled() {
-    return GetCurrentPlaylistVarInt("force_boosts", 0) == 1
-}
 
 array<string> kraber = ["mp_weapon_hemlok_smg","mp_weapon_g2","mp_weapon_alternator_smg","mp_weapon_car","mp_weapon_r97","mp_weapon_rspn101","mp_weapon_rspn101_og","mp_weapon_vinson"]
 array<string> secondary = ["mp_weapon_autopistol","mp_weapon_wingman"]
