@@ -268,11 +268,14 @@ void function UseBurnCardWeaponInCriticalSection( entity weapon, entity ownerPla
 
 void function BurnMeter_GiveRewardDirect( entity player, string itemRef )
 {
-    if(itemRef == "burnmeter_smart_pistol")
+    if(GetCurrentPlaylistVarInt("force_boosts", 0) == 1){
+        if(itemRef == "burnmeter_smart_pistol")
         itemRef = "burnmeter_phase_rewind"
 
-    if(itemRef == "burnmeter_ap_turret_weapon")
-        itemRef = "burnmeter_holopilot_nova"
+        if(itemRef == "burnmeter_ap_turret_weapon")
+            itemRef = "burnmeter_holopilot_nova"
+    }
+
 	PlayerInventory_PushInventoryItemByBurnRef( player, itemRef )
 	Remote_CallFunction_Replay( player, "ServerCallback_RewardReadyMessage", player.s.respawnTime )
 }
