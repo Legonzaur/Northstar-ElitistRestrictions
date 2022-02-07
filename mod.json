@@ -1,60 +1,9 @@
 {
-  "Name": "Loadouts.Elitist",
+  "Name": "Legonzaur.ElitistRestrictions",
   "Description": "Forces everyone to move. Don't roast me on this.",
   "LoadPriority": 2,
   "RequiredOnClient": false,
-  "Version": "1.0",
-  "ConVars": [
-    {
-      "Name": "accepted_speed",
-      "DefaultValue": "260"
-    },
-
-    {
-      "Name": "speedgauge_multiplier",
-      "DefaultValue": "1"
-    },
-
-    {
-      "Name": "remove_melee",
-      "DefaultValue": "1"
-    },
-
-    {
-      "Name": "force_weapons",
-      "DefaultValue": "1"
-    },
-
-    {
-      "Name": "patch_weapons",
-      "DefaultValue": "1"
-    },
-
-    {
-      "Name": "kill_slow_players",
-      "DefaultValue": "1"
-    },
-
-    {
-      "Name": "damage_slow_players",
-      "DefaultValue": "0"
-    },
-
-    {
-      "Name": "bar_speedgauge_counter",
-      "DefaultValue": "1"
-    },
-
-    {
-      "Name": "text_speedgauge_counter",
-      "DefaultValue": "0"
-    },
-
-    {
-      "Name": "burnmeter_speedgauge_counter",
-      "DefaultValue": "0"
-    }
-  ],
+  "Version": "1.0.1",
   "Scripts": [
     {
       "Path": "loadout.gnut",
@@ -65,7 +14,7 @@
     },
     {
       "Path": "elitist.gnut",
-      "RunOn": "( CLIENT || SERVER ) && MP",
+      "RunOn": "SERVER && MP",
       "ServerCallback": {
         "After": "Elitist_Init"
       }

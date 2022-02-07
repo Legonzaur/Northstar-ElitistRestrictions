@@ -1,4 +1,4 @@
-# Gamemode.Elitist
+# Legonzaur.ElitistRestrictions
 
 Mod for Titanfall2's Northstar
 

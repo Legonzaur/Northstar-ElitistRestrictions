@@ -4,11 +4,6 @@ void function Elitist_Loadout_Init() {
     #if SERVER
         AddCallback_OnPlayerRespawned( ForcePlayerLoadout )
         AddCallback_OnPlayerGetsNewPilotLoadout( ForcePlayerLoadoutOnLoadoutChange )
-
-        if(ForceBoostsEnabled()){
-            AddCallback_GameStateEnter( eGameState.Playing, Remove_NonElitist_Boosts )
-        }
-
     #endif
 }
 
@@ -137,28 +132,4 @@ array<string> lmgs = ["mp_weapon_lstar","mp_weapon_esaw","mp_weapon_lmg"]
     void function ForcePlayerLoadoutOnLoadoutChange(entity player, PilotLoadoutDef loadout ) {
         ForcePlayerLoadout( player )
     }
-
-    void function Remove_NonElitist_Boosts(){
-        thread Remove_NonElitist_Boosts_Thread()
-    }
-
-    //I can't find how to override Northstar's code so here we go ugly
-    void function Remove_NonElitist_Boosts_Thread(){
-        while(true){
-            wait 0.1
-            foreach (entity player in GetPlayerArray()){
-                if(IsValid(player)){
-                    entity burncard = player.GetOffhandWeapon(4)
-                    if(burncard && burncard.GetWeaponClassName() == "mp_ability_burncardweapon" && burncard.GetMods().find("burnmeter_smart_pistol") > 0){
-                        burncard.SetMods(["burn_card_weapon_mod","burnmeter_phase_rewind"])
-                    }else if(burncard && burncard.GetWeaponClassName() == "mp_ability_turretweapon"){
-                        player.TakeOffhandWeapon(4)
-                        player.GiveOffhandWeapon("mp_ability_holopilot_nova",4,["burn_card_weapon_mod"])
-                    }
-                }
-            }
-            //print(eGameState.Playing)
-        }
-    }
-
 #endif
