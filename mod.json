@@ -1,6 +1,6 @@
 {
   "Name": "Legonzaur.ElitistRestrictions",
-  "Description": "Don't roast me on this.",
+  "Description": "Removes campers, smgs users and melee. Configurable.",
   "LoadPriority": 2,
   "RequiredOnClient": false,
   "Version": "1.0.1",
