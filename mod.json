@@ -1,6 +1,6 @@
 {
   "Name": "Legonzaur.ElitistRestrictions",
-  "Description": "Forces everyone to move. Don't roast me on this.",
+  "Description": "Don't roast me on this.",
   "LoadPriority": 2,
   "RequiredOnClient": false,
   "Version": "1.0.1",
